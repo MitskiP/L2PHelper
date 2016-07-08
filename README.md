@@ -10,7 +10,7 @@ L2PHelper depends heavily on wget. Mac OS users do not have wget initially.
 
 ## Configuration
 The L2PHelper.cfg has to set an array parse[] and the variables user and pw. parse[i] shall look like this:
-parse[i]='<Module name>/<Menu entry in ENGLISH>[/Path to track]/*'
+parse[i]='Module name/Menu entry in ENGLISH[/Path to track]/*'
 E.g.
 ```
 parse[0]='Formale Systeme, Automaten, Prozesse/Learning Materials/*'
