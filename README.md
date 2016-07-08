@@ -8,6 +8,10 @@ While this script is running the owncloud client is paused (if it is running).
 
 L2PHelper depends heavily on wget. Mac OS users do not have wget initially.
 
+## Usage
+Call the script in an empty directory. This will create a config file in the same directory which has to be fed with your user name and password for L2P.
+Call the script again. Now it will download L2P contents.
+
 ## Configuration
 The L2PHelper.cfg has to set an array parse[] and the variables user and pw. parse[i] shall look like this:
 ```
