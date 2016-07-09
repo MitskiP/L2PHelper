@@ -53,7 +53,9 @@ fgcolor() {
 	shift
 	[ $# -gt 0 ] && fgcolor "$@"
 }
-if ! which mktemp &>/dev/null; then
+if testmktemp="`mktemp 2>/dev/null`" && [ -f "$testmktemp" ]; then
+	rm "$testmktemp"
+else
 	mktemp() {
 		local t="$progdir/$$"
 		while [ -f "$t" ]; do
