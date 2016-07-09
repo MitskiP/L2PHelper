@@ -78,14 +78,24 @@ if ! which wget &>/dev/null; then
 fi
 #############
 
+quit() {
+	[ -f "$mainfile" ] && rm "$mainfile"
+	[ -f "$modfile" ] && rm "$modfile"
+	[ -f "$dirfile" ] && rm "$dirfile"
+	[ "$1" ] && echo "$1"
+	exit $2
+}
+trap "quit Aborted. 9" SIGINT SIGTERM
+
+mainfile="`mktemp`"
+modfile="`mktemp`"
+dirfile="`mktemp`"
+
 [ "$1" == -f ] && shift && force=y || force=n
 
 dload() { # downloader
 	wget -qN --header='Accept-Language: en-us' --http-user="$user" --http-password="$pw" "$@"
 }
-mainfile="`mktemp`"
-modfile="`mktemp`"
-dirfile="`mktemp`"
 dmain() { # main page downlaoder
 	#return
 	dload "$url" -O "$mainfile"
@@ -174,7 +184,5 @@ done
 [ "$force" == y -a "$poc" ] && kill -CONT "$poc"
 
 # clean up
-[ -f "$mainfile" ] && rm "$mainfile"
-[ -f "$modfile" ] && rm "$modfile"
-[ -f "$dirfile" ] && rm "$dirfile"
+quit "Done." 0
 
