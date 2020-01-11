@@ -19,11 +19,11 @@ if ! [ "$user" -a "$pw" ]; then
 			#!/bin/bash
 			# Config file for elearning.sh
 
-			parse[0]='Formale Systeme, Automaten, Prozesse/Learning Materials/*'
-			parse[1]='Einführung in die angewandte Stochastik/Learning Materials/*'
-			parse[2]='Betriebssysteme und Systemsoftware/Learning Materials/*'
-			parse[3]='Betriebssysteme und Systemsoftware/Shared Documents/Aufgaben für die Übungsgruppen/*'
-			parse[4]='Betriebssysteme und Systemsoftware/Assignments/*'
+			parse[0]='Formale Systeme, Automaten, Prozesse//Learning Materials/*'
+			parse[1]='Einführung in die angewandte Stochastik//Learning Materials/*'
+			parse[2]='Betriebssysteme und Systemsoftware//Learning Materials/*'
+			parse[3]='Betriebssysteme und Systemsoftware//Shared Documents/Aufgaben für die Übungsgruppen/*'
+			parse[4]='Betriebssysteme und Systemsoftware//Assignments/*'
 
 			user= #user name here
 			pw= #password here
@@ -112,7 +112,16 @@ dfile() { # file downloader
 	local name="$2"
 	[ -f "$2" ] || fgcolor red "Downloading new file: $2...\n" stop
 	[ "$force" == y ] && local name="$name.new.$$"
+	# sometimes pdf files are not correctly downloaded somehow; this is a workaround
 	dload -c "$link" -O "$name"
+	if [[ "$2" =~ \.pdf$ ]]; then
+		while ! pdfinfo "$name" &>/dev/null; do
+			fgcolor red "another try\n" stop
+			rm "$name"
+			wget -N --header='Accept-Language: en-us' --http-user="$user" --http-password="$pw" -c "$link" -O "$name"
+			#dload -c "$link" -O "$name"
+		done
+	fi
 	if [ "$force" == y ]; then
 		[ -f "$2" ] && { cmp "$name" "$2" &>/dev/null && rm "$name" && return || fgcolor red "Updated File: $2\n" stop; }
 		mv "$name" "$2"
@@ -162,8 +171,9 @@ poc="`pgrep 'owncloud'`"
 # main
 for p in "${parse[@]}"; do
 	# get module page
-	module="${p%%/*}"
-	p="${p#*/}"
+	module="${p%%//*}"
+	module="${module//\//.}"
+	p="${p#*//}"
 	modlink="$baseurl`grep "$module" "$mainfile" | grep href | sed -e "s#.*href=$baseurl\([^>]*\)>$module.*#\1#"`"
 	echo
 	fgcolor blue "$module" stop ": $modlink\n"
